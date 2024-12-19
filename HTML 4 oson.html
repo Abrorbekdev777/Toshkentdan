@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="eng">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talabalar Ro'yxati</title>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+
+        table {
+            width: 50%;
+            margin-top: 20px;
+        }
+
+        .form-container {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Talabalar Ro'yxati</h1>
+    <div class="form-container">
+        <h2>Yangi Talaba Qo'shish</h2>
+        <form id="addStudentForm">
+            <label for="firstName">Ism:</label><br>
+            <input type="text" id="firstName" name="firstName" required><br><br>
+            <label for="lastName">Familiya:</label><br>
+            <input type="text" id="lastName" name="lastName" required><br><br>
+            <label for="age">Yosh:</label><br>
+            <input type="number" id="age" name="age" required><br><br>
+            <button type="submit">Qo'shish</button><br>
+        </form>
+    </div>
+
+    <!-- Talabalar Ro'yxati -->
+    <h2>Talabalar Ro'yxati</h2>
+    <table id="studentsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ism</th>
+                <th>Familiya</th>
+                <th>Yosh</th>
+                <th>Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div class="form-container" id="editFormContainer" style="display:none;">
+        <h2>Talabani Tahrirlash</h2>
+        <form id="editStudentForm">
+            <label for="editFirstName">Ism:</label>
+            <input type="text" id="editFirstName" name="editFirstName" required><br><br>
+            <label for="editLastName">Familiya:</label>
+            <input type="text" id="editLastName" name="editLastName" required><br><br>
+            <label for="editAge">Yosh:</label>
+            <input type="number" id="editAge" name="editAge" required><br><br>
+            <input type="hidden" id="editStudentId" name="editStudentId">
+            <button type="submit">Yangilash</button>
+        </form>
+    </div>
+
+    <script>
+        let students = [];
+        let currentId = 1;
+        document.getElementById("addStudentForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const firstName = document.getElementById("firstName").value;
+            const lastName = document.getElementById("lastName").value;
+            const age = document.getElementById("age").value;
+
+            const newStudent = {
+                id: currentId++,
+                firstName: firstName,
+                lastName: lastName,
+                age: age
+            };
+
+            students.push(newStudent);
+            renderStudents();
+            document.getElementById("addStudentForm").reset();
+        });
+        function renderStudents() {
+            const tbody = document.querySelector("#studentsTable tbody");
+            tbody.innerHTML = "";
+            students.forEach(student => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.firstName}</td>
+                    <td>${student.lastName}</td>
+                    <td>${student.age}</td>
+                    <td>
+                        <button onclick="editStudent(${student.id})">Tahrirlash</button>
+                        <button onclick="deleteStudent(${student.id})">O'chirish</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        function editStudent(id) {
+            const student = students.find(student => student.id === id);
+            document.getElementById("editFirstName").value = student.firstName;
+            document.getElementById("editLastName").value = student.lastName;
+            document.getElementById("editAge").value = student.age;
+            document.getElementById("editStudentId").value = student.id;
+
+            document.getElementById("editFormContainer").style.display = "block";
+        }
+        document.getElementById("editStudentForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const id = document.getElementById("editStudentId").value;
+            const firstName = document.getElementById("editFirstName").value;
+            const lastName = document.getElementById("editLastName").value;
+            const age = document.getElementById("editAge").value;
+
+            const studentIndex = students.findIndex(student => student.id == id);
+            students[studentIndex] = { id, firstName, lastName, age };
+
+            renderStudents();
+            document.getElementById("editFormContainer").style.display = "none";
+        });
+        function deleteStudent(id) {
+            students = students.filter(student => student.id !== id);
+            renderStudents();
+        }
+    </script>
+</body>
+
+</html>
